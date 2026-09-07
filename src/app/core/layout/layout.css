@@ -161,6 +161,10 @@
   font-size: 0.8rem;
 }
 
+.topbar__account {
+  position: relative;
+}
+
 .topbar__avatar {
   width: 2rem;
   height: 2rem;
@@ -171,6 +175,42 @@
   font-size: 0.75rem;
   font-weight: 700;
   cursor: pointer;
+}
+
+.topbar__avatar--open {
+  box-shadow: 0 0 0 2px #000, 0 0 0 3px #fff;
+}
+
+.account-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 40;
+  min-width: 12.25rem;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  background: #282828;
+  box-shadow: 0 16px 24px rgba(0, 0, 0, 0.3), 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.account-menu__item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem 0.75rem;
+  border: 0;
+  border-radius: 0.125rem;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 400;
+  text-align: left;
+  cursor: pointer;
+}
+
+.account-menu__item:hover {
+  background: hsla(0, 0%, 100%, 0.1);
 }
 
 .icon-btn {

@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, HostListener, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Playlist, TrackHit } from '../../shared/models/playlist.model';
 import { Empty } from '../../shared/ui/empty/empty';
@@ -31,6 +31,7 @@ export class Layout {
   readonly pendingDelete = this.playlistUi.pendingDelete;
   readonly searchQuery = this.library.searchQuery;
   readonly searchHits = this.library.searchHits;
+  readonly accountMenuOpen = signal(false);
 
   readonly displayName = computed(
     () => this.authService.user()?.name || this.authService.user()?.username || 'Usuario',
@@ -71,7 +72,25 @@ export class Layout {
     this.selectPlaylist(hit.playlist);
   }
 
+  toggleAccountMenu(): void {
+    this.accountMenuOpen.update((open) => !open);
+  }
+
+  @HostListener('document:click', ['$event'])
+  closeAccountMenu(event: MouseEvent): void {
+    const target = event.target as HTMLElement | null;
+    if (!target?.closest('.topbar__account')) {
+      this.accountMenuOpen.set(false);
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.accountMenuOpen.set(false);
+  }
+
   async logout(): Promise<void> {
+    this.accountMenuOpen.set(false);
     this.library.reset();
     this.playlistUi.reset();
     this.authService.logout();

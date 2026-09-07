@@ -51,14 +51,27 @@
     </div>
 
     <div class="topbar__end">
-      <button
-        class="topbar__avatar"
-        type="button"
-        [attr.aria-label]="'Cerrar sesión de ' + displayName()"
-        (click)="logout()"
-      >
-        {{ initial() }}
-      </button>
+      <div class="topbar__account">
+        <button
+          class="topbar__avatar"
+          type="button"
+          [class.topbar__avatar--open]="accountMenuOpen()"
+          [attr.aria-expanded]="accountMenuOpen()"
+          aria-haspopup="menu"
+          [attr.aria-label]="'Menú de ' + displayName()"
+          (click)="toggleAccountMenu()"
+        >
+          {{ initial() }}
+        </button>
+
+        @if (accountMenuOpen()) {
+          <div class="account-menu" role="menu" aria-label="Cuenta">
+            <button class="account-menu__item" type="button" role="menuitem" (click)="logout()">
+              Cerrar sesión
+            </button>
+          </div>
+        }
+      </div>
     </div>
   </header>
 
