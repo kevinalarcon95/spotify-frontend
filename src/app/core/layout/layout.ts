@@ -1,16 +1,17 @@
 import { Component, computed, inject } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { Playlist } from '../../shared/models/playlist.model';
+import { Playlist, TrackHit } from '../../shared/models/playlist.model';
 import { Empty } from '../../shared/ui/empty/empty';
 import { PlaylistForm } from '../../shared/ui/playlist-form/playlist-form';
 import { PlaylistDelete } from '../../shared/ui/playlist-delete/playlist-delete';
+import { SongForm } from '../../shared/ui/song-form/song-form';
 import { AuthService } from '../services/auth.service';
 import { LibraryService } from '../services/library.service';
 import { PlaylistUiService } from '../services/playlist-ui.service';
 
 @Component({
   selector: 'app-layout',
-  imports: [Empty, PlaylistForm, PlaylistDelete, RouterLink, RouterOutlet],
+  imports: [Empty, PlaylistForm, PlaylistDelete, RouterLink, RouterOutlet, SongForm],
   templateUrl: './layout.html',
   styleUrl: './layout.css',
 })
@@ -28,6 +29,8 @@ export class Layout {
   readonly addPanelOpen = this.playlistUi.addPanelOpen;
   readonly formOpen = this.playlistUi.formOpen;
   readonly pendingDelete = this.playlistUi.pendingDelete;
+  readonly searchQuery = this.library.searchQuery;
+  readonly searchHits = this.library.searchHits;
 
   readonly displayName = computed(
     () => this.authService.user()?.name || this.authService.user()?.username || 'Usuario',
@@ -39,6 +42,10 @@ export class Layout {
   }
 
   selectPlaylist(playlist: Playlist): void {
+    if (this.selectedPlaylist()?.name !== playlist.name) {
+      this.playlistUi.closeAddPanel();
+    }
+
     void this.library.selectPlaylist(playlist);
   }
 
@@ -50,8 +57,18 @@ export class Layout {
     this.playlistUi.requestDelete(playlist);
   }
 
-  toggleAddPanel(): void {
-    this.playlistUi.toggleAddPanel();
+  closeAddPanel(): void {
+    this.playlistUi.closeAddPanel();
+  }
+
+  onGlobalSearch(event: Event): void {
+    this.library.setSearchQuery((event.target as HTMLInputElement).value);
+  }
+
+  async openSearchHit(hit: TrackHit): Promise<void> {
+    this.library.playTrack(hit.track);
+    this.library.clearSearch();
+    this.selectPlaylist(hit.playlist);
   }
 
   async logout(): Promise<void> {

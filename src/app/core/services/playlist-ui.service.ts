@@ -5,7 +5,7 @@ import { Playlist } from '../../shared/models/playlist.model';
 export class PlaylistUiService {
   readonly formOpen = signal(false);
   readonly formMode = signal<'create' | 'edit'>('create');
-  readonly addPanelOpen = signal(true);
+  readonly addPanelOpen = signal(false);
   readonly pendingDelete = signal<Playlist | null>(null);
 
   openCreateForm(): void {
@@ -30,12 +30,17 @@ export class PlaylistUiService {
     this.pendingDelete.set(null);
   }
 
-  toggleAddPanel(): void {
-    this.addPanelOpen.update((open) => !open);
+  openAddPanel(): void {
+    this.addPanelOpen.set(true);
+  }
+
+  closeAddPanel(): void {
+    this.addPanelOpen.set(false);
   }
 
   reset(): void {
     this.formOpen.set(false);
+    this.addPanelOpen.set(false);
     this.pendingDelete.set(null);
   }
 }

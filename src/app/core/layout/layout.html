@@ -13,24 +13,44 @@
         <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2" />
         <path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="m16 16 4 4" />
       </svg>
-      <input class="topbar__search-input" type="search" placeholder="¿Qué quieres reproducir?" aria-label="Buscar" />
+      <input
+        class="topbar__search-input"
+        type="search"
+        placeholder="¿Qué quieres reproducir?"
+        aria-label="Buscar canciones, artistas o géneros"
+        [value]="searchQuery()"
+        (input)="onGlobalSearch($event)"
+      />
       <button class="icon-btn icon-btn--sm" type="button" aria-label="Crear" (click)="openCreateForm()">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path fill="currentColor" d="M11 5h2v14h-2z" />
           <path fill="currentColor" d="M5 11h14v2H5z" />
         </svg>
       </button>
+
+      @if (searchQuery().trim()) {
+        <div class="topbar__results" role="listbox" aria-label="Resultados de búsqueda">
+          @if (searchHits().length === 0) {
+            <p class="topbar__results-empty">No hay canciones, artistas o géneros que coincidan.</p>
+          } @else {
+            @for (hit of searchHits(); track hit.playlist.name + hit.track.title + hit.track.artist + $index) {
+              <button class="topbar__result" type="button" (click)="openSearchHit(hit)">
+                <span class="topbar__result-title">{{ hit.track.title }}</span>
+                <span class="topbar__result-meta">
+                  {{ hit.track.artist }}
+                  @if (hit.track.genre) {
+                    · {{ hit.track.genre }}
+                  }
+                  · {{ hit.playlist.name }}
+                </span>
+              </button>
+            }
+          }
+        </div>
+      }
     </div>
 
     <div class="topbar__end">
-      <button class="icon-btn" type="button" aria-label="Notificaciones">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path
-            fill="currentColor"
-            d="M12 3a6 6 0 0 0-6 6v3.2l-1.4 2.8A1 1 0 0 0 5.5 17h13a1 1 0 0 0 .9-1.5L18 12.2V9a6 6 0 0 0-6-6zm0 18a2.8 2.8 0 0 0 2.7-2H9.3A2.8 2.8 0 0 0 12 21z"
-          />
-        </svg>
-      </button>
       <button
         class="topbar__avatar"
         type="button"
@@ -123,7 +143,7 @@
       <aside class="panel add-panel">
         <div class="add-panel__header">
           <h2 class="panel__title">Añadir a la lista</h2>
-          <button class="icon-btn icon-btn--sm" type="button" aria-label="Cerrar" (click)="toggleAddPanel()">
+          <button class="icon-btn icon-btn--sm" type="button" aria-label="Cerrar" (click)="closeAddPanel()">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path
                 fill="currentColor"
@@ -132,10 +152,7 @@
             </svg>
           </button>
         </div>
-        <app-empty
-          title="Crea una canción"
-          text="Completa el formulario para añadirla a esta playlist."
-        />
+        <app-song-form />
       </aside>
     }
   </div>

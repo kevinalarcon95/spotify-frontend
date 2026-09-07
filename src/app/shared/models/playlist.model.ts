@@ -6,6 +6,11 @@ export interface Playlist {
   tracks: Track[];
 }
 
+export interface TrackHit {
+  track: Track;
+  playlist: Playlist;
+}
+
 export interface PlaylistApi {
   nombre: string;
   descripcion?: string;

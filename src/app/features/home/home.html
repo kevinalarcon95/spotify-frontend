@@ -19,7 +19,7 @@
       <path fill="currentColor" d="M8 5.5v13l11-6.5z" />
     </svg>
   </button>
-  <button class="chip" type="button" (click)="toggleAddPanel()">+ Añadir</button>
+  <button class="chip" type="button" (click)="openAddPanel()">+ Añadir</button>
   <button class="chip" type="button" (click)="openEditForm()">Modificar nombre e información</button>
   <button class="chip" type="button" (click)="deletePlaylist()">Eliminar</button>
   <label class="playlist__search">
@@ -27,7 +27,12 @@
       <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2" />
       <path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="m16 16 4 4" />
     </svg>
-      <input type="search" placeholder="Busca canciones" />
+      <input
+        type="search"
+        placeholder="Busca canciones"
+        [value]="query()"
+        (input)="onSearch($event)"
+      />
   </label>
 </div>
 
@@ -43,8 +48,10 @@
 
   @if (tracks().length === 0) {
   <app-empty centered title="Esta playlist está vacía" text="Pulsa + Añadir para agregar tu primera canción." />
+  } @else if (visibleTracks().length === 0) {
+  <app-empty centered title="Sin resultados" text="Ninguna canción coincide con tu búsqueda." />
   } @else {
-  @for (track of tracks(); track $index) {
+  @for (track of visibleTracks(); track track.title + track.artist + $index) {
   <div class="tracklist__row">
     <span>{{ $index + 1 }}</span>
     <span>{{ track.title }}</span>
