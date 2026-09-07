@@ -41,6 +41,7 @@ export class PlaylistDelete {
 
     try {
       await this.library.deletePlaylist(name);
+      this.playlistUi.closeAddPanel();
       this.playlistUi.cancelDelete();
     } catch (err) {
       this.error.set(resolveApiError(err, 'No se pudo eliminar la lista.'));

@@ -1,0 +1,82 @@
+<form class="song-form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <div class="song-form__field">
+    <label class="song-form__label" for="song-title">Título</label>
+    <input
+      #titleInput
+      id="song-title"
+      class="song-form__input"
+      [class.song-form__input--invalid]="isInvalid('title')"
+      type="text"
+      formControlName="title"
+      placeholder="Título de la canción"
+      autocomplete="off"
+      [attr.aria-invalid]="isInvalid('title')"
+    />
+    @if (isInvalid('title')) {
+      <span class="song-form__hint">El título es obligatorio.</span>
+    }
+  </div>
+
+  <div class="song-form__field">
+    <label class="song-form__label" for="song-artist">Artista</label>
+    <input
+      id="song-artist"
+      class="song-form__input"
+      [class.song-form__input--invalid]="isInvalid('artist')"
+      type="text"
+      formControlName="artist"
+      placeholder="Artista o banda"
+      autocomplete="off"
+      [attr.aria-invalid]="isInvalid('artist')"
+    />
+    @if (isInvalid('artist')) {
+      <span class="song-form__hint">El artista es obligatorio.</span>
+    }
+  </div>
+
+  <div class="song-form__field">
+    <label class="song-form__label" for="song-album">Álbum</label>
+    <input
+      id="song-album"
+      class="song-form__input"
+      type="text"
+      formControlName="album"
+      placeholder="Álbum"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="song-form__field">
+    <label class="song-form__label" for="song-year">Año</label>
+    <input
+      id="song-year"
+      class="song-form__input"
+      type="text"
+      inputmode="numeric"
+      maxlength="4"
+      formControlName="year"
+      placeholder="Año"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="song-form__field">
+    <label class="song-form__label" for="song-genre">Género</label>
+    <input
+      id="song-genre"
+      class="song-form__input"
+      type="text"
+      formControlName="genre"
+      placeholder="Género"
+      autocomplete="off"
+    />
+  </div>
+
+  @if (error()) {
+    <p class="song-form__error" role="alert">{{ error() }}</p>
+  }
+
+  <button class="song-form__submit" type="submit" [disabled]="saving()">
+    {{ saving() ? 'Añadiendo...' : 'Añadir canción' }}
+  </button>
+</form>

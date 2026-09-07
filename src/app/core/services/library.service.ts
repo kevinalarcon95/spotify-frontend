@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { Playlist } from '../../shared/models/playlist.model';
+import { Playlist, TrackHit } from '../../shared/models/playlist.model';
 import { Track } from '../../shared/models/track.model';
 import { resolveApiError } from '../utils/http-error';
 import { AuthService } from './auth.service';
@@ -13,6 +13,7 @@ export class LibraryService {
 
   readonly playlists = signal<Playlist[]>([]);
   readonly currentTrack = signal<Track | null>(null);
+  readonly searchQuery = signal('');
   readonly loading = signal(false);
   readonly error = signal<string | null>(null);
 
@@ -22,6 +23,23 @@ export class LibraryService {
     () => this.playlists().find((playlist) => playlist.name === this.selectedName()) ?? null,
   );
   readonly tracks = computed(() => this.selectedPlaylist()?.tracks ?? []);
+  readonly searchHits = computed<TrackHit[]>(() => {
+    const query = this.searchQuery().trim().toLowerCase();
+
+    if (!query) {
+      return [];
+    }
+
+    return this.playlists().flatMap((playlist) =>
+      (playlist.tracks ?? [])
+        .filter((track) =>
+          [track.title, track.artist, track.genre].some((value) =>
+            value.toLowerCase().includes(query),
+          ),
+        )
+        .map((track) => ({ track, playlist })),
+    );
+  });
 
   async loadPlaylists(): Promise<void> {
     if (!this.auth.isAuthenticated()) {
@@ -107,6 +125,31 @@ export class LibraryService {
     }
   }
 
+  async addTrack(track: Track): Promise<Playlist> {
+    const selected = this.selectedPlaylist();
+
+    if (!selected) {
+      throw new Error('missing-playlist');
+    }
+
+    const payload: Playlist = {
+      name: selected.name,
+      description: selected.description,
+      tracks: [...(selected.tracks ?? []), track],
+    };
+
+    await firstValueFrom(this.playlistApi.delete(selected.name));
+
+    try {
+      const created = await firstValueFrom(this.playlistApi.create(payload));
+      this.replacePlaylist(selected.name, created);
+      return created;
+    } catch (err) {
+      await this.loadPlaylists();
+      throw err;
+    }
+  }
+
   async deletePlaylist(name: string): Promise<void> {
     await firstValueFrom(this.playlistApi.delete(name));
     this.playlists.update((list) => list.filter((item) => item.name !== name));
@@ -116,10 +159,23 @@ export class LibraryService {
     }
   }
 
+  setSearchQuery(value: string): void {
+    this.searchQuery.set(value);
+  }
+
+  clearSearch(): void {
+    this.searchQuery.set('');
+  }
+
+  playTrack(track: Track): void {
+    this.currentTrack.set(track);
+  }
+
   reset(): void {
     this.playlists.set([]);
     this.selectedName.set(null);
     this.currentTrack.set(null);
+    this.searchQuery.set('');
     this.error.set(null);
   }
 
