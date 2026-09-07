@@ -1,20 +1,20 @@
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
+import { LibraryService } from '../../core/services/library.service';
+import { Empty } from '../../shared/ui/empty/empty';
 
 @Component({
   selector: 'app-home',
+  imports: [Empty],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
 export class Home {
-  private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
+  private readonly library = inject(LibraryService);
 
-  readonly user = this.authService.user;
+  readonly selectedPlaylist = this.library.selectedPlaylist;
+  readonly tracks = this.library.tracks;
 
-  async logout(): Promise<void> {
-    this.authService.logout();
-    await this.router.navigate(['/login']);
+  toggleAddPanel(): void {
+    this.library.toggleAddPanel();
   }
 }

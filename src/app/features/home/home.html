@@ -1,5 +1,62 @@
-<section class="home">
-  <h1 class="home__title">Hola, {{ user()?.name || user()?.username }}</h1>
-  <p class="home__text">Sesión iniciada.</p>
-  <button class="home__logout" type="button" (click)="logout()">Cerrar sesión</button>
+<section class="playlist__hero">
+  <div class="cover cover--lg" aria-hidden="true">
+    <svg viewBox="0 0 24 24">
+      <path
+        fill="currentColor"
+        d="M9 18.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM11 6v9.1c-.6-.4-1.3-.6-2-.6-2 0-3.5 1.6-3.5 3.5S7 21.5 9 21.5s3.5-1.6 3.5-3.5V9h5V6z"
+      />
+    </svg>
+  </div>
+  <div class="playlist__info">
+    <p class="playlist__type">Playlist</p>
+    <h1 class="playlist__title">{{ selectedPlaylist()?.name || 'Mi lista' }}</h1>
+    <p class="playlist__meta">{{ selectedPlaylist()?.description }}</p>
+  </div>
 </section>
+
+<div class="playlist__actions">
+  <button class="play-btn" type="button" aria-label="Reproducir" [disabled]="tracks().length === 0">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="currentColor" d="M8 5.5v13l11-6.5z" />
+    </svg>
+  </button>
+  <button class="chip" type="button" (click)="toggleAddPanel()">+ Añadir</button>
+  <button class="chip" type="button">Modificar nombre e información</button>
+  <label class="playlist__search">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2" />
+      <path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="m16 16 4 4" />
+    </svg>
+    <input type="search" placeholder="Busca canciones o episodios" />
+  </label>
+</div>
+
+<div class="tracklist">
+  <div class="tracklist__head">
+    <span>#</span>
+    <span>Título</span>
+    <span>Artista</span>
+    <span>Álbum</span>
+    <span>Año</span>
+    <span>Género</span>
+  </div>
+
+  @if (tracks().length === 0) {
+    <app-empty
+      centered
+      title="Esta playlist está vacía"
+      text="Pulsa + Añadir para agregar tu primera canción."
+    />
+  } @else {
+    @for (track of tracks(); track $index) {
+      <div class="tracklist__row">
+        <span>{{ $index + 1 }}</span>
+        <span>{{ track.title }}</span>
+        <span>{{ track.artist }}</span>
+        <span>{{ track.album }}</span>
+        <span>{{ track.year }}</span>
+        <span>{{ track.genre }}</span>
+      </div>
+    }
+  }
+</div>
