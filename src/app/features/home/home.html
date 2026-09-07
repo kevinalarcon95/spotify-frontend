@@ -1,0 +1,5 @@
+<section class="home">
+  <h1 class="home__title">Hola, {{ user()?.name || user()?.username }}</h1>
+  <p class="home__text">Sesión iniciada.</p>
+  <button class="home__logout" type="button" (click)="logout()">Cerrar sesión</button>
+</section>
