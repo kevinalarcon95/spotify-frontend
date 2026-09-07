@@ -1,0 +1,12 @@
+# Cache y compilación
+.angular/
+dist/
+
+# Dependencias
+node_modules/
+
+# Entorno e IDEs
+.vscode/
+.idea/
+.DS_Store
+*.log
