@@ -211,10 +211,16 @@
 }
 
 .library__list {
+  flex: 1;
+  min-height: 0;
   margin: 0;
   padding: 0;
   overflow: auto;
   list-style: none;
+}
+
+.library__row {
+  position: relative;
 }
 
 .library__item {
@@ -222,7 +228,7 @@
   align-items: center;
   gap: 0.75rem;
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.5rem 2.5rem 0.5rem 0.5rem;
   border: 0;
   border-radius: 0.5rem;
   background: transparent;
@@ -232,8 +238,41 @@
 }
 
 .library__item--active,
-.library__item:hover {
+.library__item:hover,
+.library__row:hover .library__item {
   background: #1f1f1f;
+}
+
+.library__delete {
+  position: absolute;
+  top: 50%;
+  right: 0.4rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #b3b3b3;
+  opacity: 0;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.library__row:hover .library__delete,
+.library__delete:focus-visible {
+  opacity: 1;
+}
+
+.library__delete:hover {
+  color: #fff;
+  background: #2a2a2a;
+}
+
+.library__delete svg {
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 .library__meta {

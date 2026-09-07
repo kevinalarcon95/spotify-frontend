@@ -2,20 +2,19 @@ import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { AuthService } from '../services/auth.service';
 import { SKIP_AUTH_REDIRECT } from './auth.context';
+import { AuthService } from '../services/auth.service';
+import { AuthStore } from '../services/auth.store';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const store = inject(AuthStore);
   const authService = inject(AuthService);
   const router = inject(Router);
-  const authorization = authService.authorizationHeader();
+  const authorization = store.header();
 
-  const authReq =
-    authorization && !req.headers.has('Authorization')
-      ? req.clone({
-          setHeaders: { Authorization: authorization },
-        })
-      : req;
+  const authReq = authorization
+    ? req.clone({ setHeaders: { Authorization: authorization } })
+    : req;
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {

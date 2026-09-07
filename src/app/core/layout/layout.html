@@ -14,7 +14,7 @@
         <path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="m16 16 4 4" />
       </svg>
       <input class="topbar__search-input" type="search" placeholder="¿Qué quieres reproducir?" aria-label="Buscar" />
-      <button class="icon-btn icon-btn--sm" type="button" aria-label="Crear">
+      <button class="icon-btn icon-btn--sm" type="button" aria-label="Crear" (click)="openCreateForm()">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path fill="currentColor" d="M11 5h2v14h-2z" />
           <path fill="currentColor" d="M5 11h14v2H5z" />
@@ -51,7 +51,7 @@
           </svg>
           Tu biblioteca
         </h2>
-        <button class="chip" type="button">+ Crear</button>
+        <button class="chip" type="button" (click)="openCreateForm()">+ Crear</button>
       </div>
 
       <div class="library__toolbar">
@@ -64,19 +64,23 @@
         <button class="ghost" type="button">Recientes ▾</button>
       </div>
 
-      @if (playlists().length === 0) {
+      @if (loading()) {
+        <app-empty title="Cargando..." text="Obteniendo tus listas de reproducción." />
+      } @else if (error() && playlists().length === 0) {
+        <app-empty title="No se pudo cargar tu biblioteca" [text]="error() ?? ''" />
+      } @else if (playlists().length === 0) {
         <app-empty
           title="Tu biblioteca está vacía"
           text="Crea una playlist para empezar a organizar tu música."
         />
       } @else {
         <ul class="library__list">
-          @for (playlist of playlists(); track $index) {
-            <li>
+          @for (playlist of playlists(); track playlist.name) {
+            <li class="library__row">
               <button
                 class="library__item"
                 type="button"
-                [class.library__item--active]="selectedPlaylist() === playlist"
+                [class.library__item--active]="selectedPlaylist()?.name === playlist.name"
                 (click)="selectPlaylist(playlist)"
               >
                 <span class="cover cover--sm" aria-hidden="true">
@@ -89,8 +93,21 @@
                 </span>
                 <span class="library__meta">
                   <span class="library__name">{{ playlist.name }}</span>
-                  <span class="library__sub">{{ playlist.description }}</span>
+                  <span class="library__sub">{{ playlist.description || 'Playlist' }}</span>
                 </span>
+              </button>
+              <button
+                class="library__delete"
+                type="button"
+                [attr.aria-label]="'Eliminar ' + playlist.name"
+                (click)="deletePlaylist(playlist)"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M9 4h6l.8 2H19v2h-1.1l-1 12H7.1l-1-12H5V6h3.2zm2 4v10h2V8zm-3.1 0L8.7 18h1.2L9.1 8zm7 0-.8 10h1.2l.8-10z"
+                  />
+                </svg>
               </button>
             </li>
           }
@@ -197,3 +214,11 @@
     </div>
   </footer>
 </div>
+
+@if (formOpen()) {
+  <app-playlist-form />
+}
+
+@if (pendingDelete()) {
+  <app-playlist-delete />
+}

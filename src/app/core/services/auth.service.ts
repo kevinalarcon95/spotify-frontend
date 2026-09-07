@@ -1,79 +1,66 @@
-import { HttpClient, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpHeaders } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import { catchError, map, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { SKIP_AUTH_REDIRECT } from '../interceptors/auth.context';
 import { LoginCredentials } from '../../shared/models/credentials.model';
 import { User } from '../../shared/models/user.model';
+import { AuthStore } from './auth.store';
 
-const CREDENTIALS_KEY = 'spotify.auth.credentials';
 const USER_KEY = 'spotify.auth.user';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
-  private readonly credentials = signal<LoginCredentials | null>(null);
+  private readonly store = inject(AuthStore);
 
-  readonly user = signal<User | null>(null);
-  readonly isAuthenticated = computed(() => this.credentials() !== null);
-
-  constructor() {
-    this.restoreSession();
-  }
-
-  authorizationHeader(): string | null {
-    const credentials = this.credentials();
-
-    if (!credentials) {
-      return null;
-    }
-
-    return `Basic ${btoa(`${credentials.username}:${credentials.password}`)}`;
-  }
+  readonly user = signal<User | null>(this.readStoredUser());
+  readonly isAuthenticated = computed(() => this.store.get() !== null);
 
   login(credentials: LoginCredentials): Observable<User> {
+    const user: User = { username: credentials.username };
+    this.store.set(credentials);
+
     return this.http
-      .get<User>(`${environment.apiUrl}/auth/me`, {
-        headers: { Authorization: this.toBasicHeader(credentials) },
+      .get<unknown>(`${environment.apiUrl}/lists`, {
+        headers: new HttpHeaders({
+          Authorization: this.store.header() ?? '',
+        }),
         context: new HttpContext().set(SKIP_AUTH_REDIRECT, true),
       })
       .pipe(
-        map((user) => user ?? { username: credentials.username }),
-        tap((user) => this.persistSession(credentials, user)),
+        map(() => user),
+        tap(() => this.persistUser(user)),
+        catchError((error) => {
+          this.logout();
+          return throwError(() => error);
+        }),
       );
   }
 
   logout(): void {
-    sessionStorage.removeItem(CREDENTIALS_KEY);
     sessionStorage.removeItem(USER_KEY);
-    this.credentials.set(null);
+    this.store.set(null);
     this.user.set(null);
   }
 
-  private toBasicHeader(credentials: LoginCredentials): string {
-    return `Basic ${btoa(`${credentials.username}:${credentials.password}`)}`;
-  }
-
-  private persistSession(credentials: LoginCredentials, user: User): void {
-    sessionStorage.setItem(CREDENTIALS_KEY, JSON.stringify(credentials));
+  private persistUser(user: User): void {
     sessionStorage.setItem(USER_KEY, JSON.stringify(user));
-    this.credentials.set(credentials);
     this.user.set(user);
   }
 
-  private restoreSession(): void {
-    const rawCredentials = sessionStorage.getItem(CREDENTIALS_KEY);
-    const rawUser = sessionStorage.getItem(USER_KEY);
+  private readStoredUser(): User | null {
+    const raw = sessionStorage.getItem(USER_KEY);
 
-    if (!rawCredentials || !rawUser) {
-      return;
+    if (!raw) {
+      return null;
     }
 
     try {
-      this.credentials.set(JSON.parse(rawCredentials) as LoginCredentials);
-      this.user.set(JSON.parse(rawUser) as User);
+      return JSON.parse(raw) as User;
     } catch {
-      this.logout();
+      sessionStorage.removeItem(USER_KEY);
+      return null;
     }
   }
 }
