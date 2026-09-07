@@ -1,0 +1,199 @@
+<div class="shell">
+  <header class="topbar">
+    <div class="topbar__start">
+      <a class="icon-btn" routerLink="/home" aria-label="Inicio">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M12.5 3.2 4 10.1V21h6.2v-6.3h3.6V21H20V10.1z" />
+        </svg>
+      </a>
+    </div>
+
+    <div class="topbar__search">
+      <svg class="topbar__search-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2" />
+        <path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="m16 16 4 4" />
+      </svg>
+      <input class="topbar__search-input" type="search" placeholder="¿Qué quieres reproducir?" aria-label="Buscar" />
+      <button class="icon-btn icon-btn--sm" type="button" aria-label="Crear">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M11 5h2v14h-2z" />
+          <path fill="currentColor" d="M5 11h14v2H5z" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="topbar__end">
+      <button class="icon-btn" type="button" aria-label="Notificaciones">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M12 3a6 6 0 0 0-6 6v3.2l-1.4 2.8A1 1 0 0 0 5.5 17h13a1 1 0 0 0 .9-1.5L18 12.2V9a6 6 0 0 0-6-6zm0 18a2.8 2.8 0 0 0 2.7-2H9.3A2.8 2.8 0 0 0 12 21z"
+          />
+        </svg>
+      </button>
+      <button
+        class="topbar__avatar"
+        type="button"
+        [attr.aria-label]="'Cerrar sesión de ' + displayName()"
+        (click)="logout()"
+      >
+        {{ initial() }}
+      </button>
+    </div>
+  </header>
+
+  <div class="shell__body" [class.shell__body--add]="addPanelOpen()">
+    <aside class="panel library">
+      <div class="library__header">
+        <h2 class="panel__title">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="currentColor" d="M3 5h4v14H3zm6 0h4v14H9zm6 0h6v14h-6z" />
+          </svg>
+          Tu biblioteca
+        </h2>
+        <button class="chip" type="button">+ Crear</button>
+      </div>
+
+      <div class="library__toolbar">
+        <button class="icon-btn icon-btn--sm" type="button" aria-label="Buscar en la biblioteca">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2" />
+            <path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="m16 16 4 4" />
+          </svg>
+        </button>
+        <button class="ghost" type="button">Recientes ▾</button>
+      </div>
+
+      @if (playlists().length === 0) {
+        <app-empty
+          title="Tu biblioteca está vacía"
+          text="Crea una playlist para empezar a organizar tu música."
+        />
+      } @else {
+        <ul class="library__list">
+          @for (playlist of playlists(); track $index) {
+            <li>
+              <button
+                class="library__item"
+                type="button"
+                [class.library__item--active]="selectedPlaylist() === playlist"
+                (click)="selectPlaylist(playlist)"
+              >
+                <span class="cover cover--sm" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path
+                      fill="currentColor"
+                      d="M9 18.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM11 6v9.1c-.6-.4-1.3-.6-2-.6-2 0-3.5 1.6-3.5 3.5S7 21.5 9 21.5s3.5-1.6 3.5-3.5V9h5V6z"
+                    />
+                  </svg>
+                </span>
+                <span class="library__meta">
+                  <span class="library__name">{{ playlist.name }}</span>
+                  <span class="library__sub">{{ playlist.description }}</span>
+                </span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </aside>
+
+    <main class="panel content">
+      <router-outlet />
+    </main>
+
+    @if (addPanelOpen()) {
+      <aside class="panel add-panel">
+        <div class="add-panel__header">
+          <h2 class="panel__title">Añadir a la lista</h2>
+          <button class="icon-btn icon-btn--sm" type="button" aria-label="Cerrar" (click)="toggleAddPanel()">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M6.2 5.1 12 10.9l5.8-5.8 1.1 1.1L13.1 12l5.8 5.8-1.1 1.1L12 13.1l-5.8 5.8-1.1-1.1L10.9 12 5.1 6.2z"
+              />
+            </svg>
+          </button>
+        </div>
+        <app-empty
+          title="Crea una canción"
+          text="Completa el formulario para añadirla a esta playlist."
+        />
+      </aside>
+    }
+  </div>
+
+  <footer class="player">
+    <div class="player__track">
+      @if (currentTrack(); as track) {
+        <span class="cover cover--sm" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path
+              fill="currentColor"
+              d="M9 18.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM11 6v9.1c-.6-.4-1.3-.6-2-.6-2 0-3.5 1.6-3.5 3.5S7 21.5 9 21.5s3.5-1.6 3.5-3.5V9h5V6z"
+            />
+          </svg>
+        </span>
+        <span class="player__meta">
+          <span class="player__name">{{ track.title }}</span>
+          <span class="player__artist">{{ track.artist }}</span>
+        </span>
+      } @else {
+        <span class="cover cover--sm cover--empty" aria-hidden="true"></span>
+        <span class="player__meta">
+          <span class="skel skel--sm"></span>
+          <span class="skel skel--xs"></span>
+        </span>
+      }
+      <button class="icon-btn icon-btn--sm" type="button" aria-label="Me gusta" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M12.1 20.3 4.8 13a4.6 4.6 0 0 1 6.5-6.5l.8.8.8-.8a4.6 4.6 0 1 1 6.5 6.5z" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="player__controls">
+      <button class="icon-btn icon-btn--sm" type="button" aria-label="Aleatorio" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="none" stroke="currentColor" stroke-width="2" d="M4 7h3.5l4 10H16M16 7h4m-4 10h4M4 17h3.5" />
+        </svg>
+      </button>
+      <button class="icon-btn icon-btn--sm" type="button" aria-label="Anterior" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M6 6h2v12H6zm3.5 6 9.5 6V6z" />
+        </svg>
+      </button>
+      <button class="play-btn play-btn--sm" type="button" aria-label="Reproducir" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M8 5.5v13l11-6.5z" />
+        </svg>
+      </button>
+      <button class="icon-btn icon-btn--sm" type="button" aria-label="Siguiente" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M16 6h2v12h-2zM5 18V6l9.5 6z" />
+        </svg>
+      </button>
+      <button class="icon-btn icon-btn--sm" type="button" aria-label="Repetir" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            d="M7 7h9a3 3 0 0 1 3 3v2M17 17H8a3 3 0 0 1-3-3v-2"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <div class="player__extra">
+      <button class="icon-btn icon-btn--sm" type="button" aria-label="Cola" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M4 6h16v2H4zm0 5h10v2H4zm0 5h16v2H4z" />
+        </svg>
+      </button>
+      <div class="player__volume" aria-hidden="true">
+        <span class="player__volume-bar"></span>
+      </div>
+    </div>
+  </footer>
+</div>

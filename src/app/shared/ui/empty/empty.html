@@ -1,0 +1,9 @@
+<section class="empty" [class.empty--center]="centered()">
+  @if (title()) {
+    <p class="empty__title">{{ title() }}</p>
+  }
+  @if (text()) {
+    <p class="empty__text">{{ text() }}</p>
+  }
+  <ng-content />
+</section>

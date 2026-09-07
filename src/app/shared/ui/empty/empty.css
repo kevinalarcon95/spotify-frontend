@@ -1,0 +1,44 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+:host.empty-host--center {
+  display: flex;
+  flex: 1;
+  align-self: stretch;
+  min-height: 12rem;
+}
+
+:host.empty-host--center .empty {
+  width: 100%;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.5rem 0.25rem;
+}
+
+.empty--center {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.empty__title,
+.empty__text {
+  margin: 0;
+}
+
+.empty__title {
+  font-weight: 700;
+}
+
+.empty__text {
+  max-width: 22rem;
+  color: #b3b3b3;
+  font-size: 0.85rem;
+}
