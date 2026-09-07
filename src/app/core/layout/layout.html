@@ -88,13 +88,63 @@
       </div>
 
       <div class="library__toolbar">
-        <button class="icon-btn icon-btn--sm" type="button" aria-label="Buscar en la biblioteca">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2" />
-            <path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="m16 16 4 4" />
-          </svg>
-        </button>
-        <button class="ghost" type="button">Recientes ▾</button>
+        <div class="library__search" [class.library__search--open]="librarySearchOpen()">
+          <button
+            class="icon-btn icon-btn--sm"
+            type="button"
+            [attr.aria-expanded]="librarySearchOpen()"
+            aria-label="Buscar en la biblioteca"
+            (click)="toggleLibrarySearch()"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2" />
+              <path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="m16 16 4 4" />
+            </svg>
+          </button>
+
+          @if (librarySearchOpen()) {
+            <input
+              #librarySearchInput
+              class="library__search-input"
+              type="search"
+              placeholder="Buscar en Tu biblioteca"
+              aria-label="Buscar en Tu biblioteca"
+              [value]="libraryQuery()"
+              (input)="onLibrarySearch($event)"
+            />
+          }
+        </div>
+
+        <div class="library__sort">
+          <button
+            class="ghost"
+            type="button"
+            [attr.aria-expanded]="sortMenuOpen()"
+            aria-haspopup="menu"
+            (click)="toggleSortMenu()"
+          >
+            {{ sortLabel() }}
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path fill="currentColor" d="M3.5 6.2 8 10.8l4.5-4.6-.9-.9L8 9l-3.6-3.7z" />
+            </svg>
+          </button>
+
+          @if (sortMenuOpen()) {
+            <div class="account-menu library__sort-menu" role="menu" aria-label="Ordenar biblioteca">
+              @for (option of sortOptions; track option.id) {
+                <button
+                  class="account-menu__item"
+                  type="button"
+                  role="menuitem"
+                  [class.account-menu__item--active]="librarySort() === option.id"
+                  (click)="setLibrarySort(option.id)"
+                >
+                  {{ option.label }}
+                </button>
+              }
+            </div>
+          }
+        </div>
       </div>
 
       @if (loading()) {
@@ -106,9 +156,14 @@
           title="Tu biblioteca está vacía"
           text="Crea una playlist para empezar a organizar tu música."
         />
+      } @else if (visiblePlaylists().length === 0) {
+        <app-empty
+          title="No se encontraron coincidencias"
+          text="Prueba con otro nombre o descripción."
+        />
       } @else {
         <ul class="library__list">
-          @for (playlist of playlists(); track playlist.name) {
+          @for (playlist of visiblePlaylists(); track playlist.name) {
             <li class="library__row">
               <button
                 class="library__item"
