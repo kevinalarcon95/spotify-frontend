@@ -1,0 +1,22 @@
+<div
+  class="dialog"
+  role="alertdialog"
+  aria-modal="true"
+  aria-labelledby="playlist-delete-title"
+  aria-describedby="playlist-delete-text"
+  (click)="$event.stopPropagation()"
+>
+  <h2 id="playlist-delete-title" class="dialog__title">¿Eliminar esta lista?</h2>
+  <p id="playlist-delete-text" class="dialog__text">
+    Se eliminará «{{ playlist()?.name }}» de Tu biblioteca. Esta acción no se puede deshacer.
+  </p>
+  @if (error()) {
+    <p class="dialog__error" role="alert">{{ error() }}</p>
+  }
+  <div class="dialog__actions">
+    <button class="dialog__cancel" type="button" (click)="cancel()" [disabled]="saving()">Cancelar</button>
+    <button class="dialog__confirm" type="button" (click)="confirm()" [disabled]="saving()">
+      {{ saving() ? 'Eliminando...' : 'Eliminar' }}
+    </button>
+  </div>
+</div>

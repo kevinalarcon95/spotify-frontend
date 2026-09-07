@@ -1,0 +1,79 @@
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 70%);
+}
+
+.dialog {
+  width: min(26rem, 100%);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  background: #282828;
+  box-shadow: 0 16px 40px rgb(0 0 0 / 60%);
+}
+
+.dialog__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.dialog__text {
+  margin: 0;
+  color: #b3b3b3;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.dialog__cancel,
+.dialog__confirm {
+  height: 3rem;
+  padding: 0 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dialog__cancel {
+  background: transparent;
+  color: #fff;
+}
+
+.dialog__cancel:hover {
+  text-decoration: underline;
+}
+
+.dialog__confirm {
+  background: #fff;
+  color: #000;
+}
+
+.dialog__confirm:hover {
+  transform: scale(1.04);
+}
+
+.dialog__cancel:disabled,
+.dialog__confirm:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+
+.dialog__error {
+  margin: 1rem 0 0;
+  color: #f3727f;
+  font-size: 0.85rem;
+}

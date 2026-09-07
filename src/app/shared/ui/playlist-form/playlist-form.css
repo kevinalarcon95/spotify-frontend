@@ -1,0 +1,160 @@
+:host {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(0 0 0 / 70%);
+}
+
+.dialog {
+  width: min(32rem, 100%);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  background: #282828;
+  box-shadow: 0 16px 40px rgb(0 0 0 / 60%);
+}
+
+.dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.dialog__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.dialog__close {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #b3b3b3;
+  cursor: pointer;
+}
+
+.dialog__close:hover {
+  color: #fff;
+  background: #3e3e3e;
+}
+
+.dialog__close svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.dialog__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.dialog__name {
+  width: 100%;
+  height: 3rem;
+  padding: 0 0.85rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: #3e3e3e;
+  color: #fff;
+  font: inherit;
+  outline: none;
+}
+
+.dialog__name:focus {
+  box-shadow: inset 0 0 0 1px #fff;
+}
+
+.dialog__outlined {
+  position: relative;
+  margin-top: 1rem;
+}
+
+.dialog__floating {
+  position: absolute;
+  top: 0;
+  left: 0.75rem;
+  z-index: 1;
+  padding: 0 0.25rem;
+  background: #282828;
+  color: #b3b3b3;
+  font-size: 0.75rem;
+  transform: translateY(-50%);
+}
+
+.dialog__description {
+  display: block;
+  width: 100%;
+  min-height: 8.5rem;
+  padding: 0.85rem;
+  border: 1px solid #727272;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  line-height: 1.4;
+  resize: none;
+  outline: none;
+}
+
+.dialog__description::placeholder {
+  color: #6a6a6a;
+}
+
+.dialog__description:focus {
+  border-color: #fff;
+}
+
+.dialog__outlined:focus-within .dialog__floating {
+  color: #fff;
+}
+
+.dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.dialog__save {
+  height: 3rem;
+  padding: 0 2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dialog__save:hover {
+  transform: scale(1.04);
+}
+
+.dialog__save:disabled {
+  opacity: 0.6;
+  cursor: default;
+  transform: none;
+}
+
+.dialog__error {
+  margin: 1rem 0 0;
+  color: #f3727f;
+  font-size: 0.85rem;
+}
